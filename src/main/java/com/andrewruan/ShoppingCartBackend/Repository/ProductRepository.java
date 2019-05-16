@@ -8,5 +8,5 @@ import com.andrewruan.ShoppingCartBackend.Entities.Product;
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Long>{
 
-	Product getById (Long id);	
+	Product getById (Long id);
 }

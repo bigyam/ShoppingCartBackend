@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,5 +57,30 @@ public class ProductController {
 		Product newProduct = productService.saveOrUpdateProduct(product);
 		
 		return new ResponseEntity<Product>(newProduct, HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/update/{prod_id}")
+	public ResponseEntity<?> updateProduct(@Valid @PathVariable Long prod_id, @RequestBody Product product, BindingResult result){
+		
+		if(result.hasErrors()){
+			Map<String, String> errorMap = new HashMap<>();
+			
+			for(FieldError error: result.getFieldErrors()) {
+				errorMap.put(error.getField(), error.getDefaultMessage());
+			}
+			
+			return new ResponseEntity<Map<String, String>>(errorMap, HttpStatus.BAD_REQUEST);
+		}
+		
+		Product productStored =  productService.getById(prod_id);
+		productStored.setDescription(product.getDescription());
+		productStored.setName(product.getName());
+		productStored.setPrice(product.getPrice());
+		productStored.setQuantity(product.getQuantity());
+		
+		productService.saveOrUpdateProduct(productStored);
+		
+		return new ResponseEntity<Product>(productStored, HttpStatus.OK);
+		
 	}
 }
